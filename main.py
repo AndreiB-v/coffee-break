@@ -1,15 +1,18 @@
 import sqlite3
 import sys
 
-from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTableWidget, QTableWidgetItem, QWidget
 
+from main_ui import Ui_MainWindow
+from addEditCoffeeForm import Ui_Form
 
-class AddEdit(QWidget):
+
+class AddEdit(QWidget, Ui_Form):
     def __init__(self, main):
         super().__init__()
-        uic.loadUi('addEditCoffeeForm.ui', self)
         self.main = main
+
+        self.setupUi(self)
         self.initUI()
 
     def initUI(self):
@@ -18,7 +21,7 @@ class AddEdit(QWidget):
         self.editID.textChanged.connect(self.change_labels)
 
     def change_labels(self):
-        con = sqlite3.connect('coffee.sqlite')
+        con = sqlite3.connect('data/coffee.sqlite')
         cur = con.cursor()
         sql = '''
         SELECT sort_name, roasting_degree, state, taste_description, price, packaging_volume
@@ -36,7 +39,7 @@ class AddEdit(QWidget):
                 i.setText('Нет такого ID')
 
     def addCoffee(self):
-        con = sqlite3.connect('coffee.sqlite')
+        con = sqlite3.connect('data/coffee.sqlite')
         cur = con.cursor()
         sql = '''INSERT INTO 
         coffees(sort_name, roasting_degree, state, taste_description, price, packaging_volume) 
@@ -53,7 +56,7 @@ class AddEdit(QWidget):
         self.close()
 
     def editCoffee(self):
-        con = sqlite3.connect('coffee.sqlite')
+        con = sqlite3.connect('data/coffee.sqlite')
         cur = con.cursor()
         sql = '''UPDATE coffees
         SET sort_name = ?, roasting_degree = ?, state = ?, 
@@ -77,10 +80,11 @@ class AddEdit(QWidget):
         self.main.show()
 
 
-class MyWidget(QMainWindow):
+class MyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
+
+        self.setupUi(self)
         self.initUI()
 
     def initUI(self):
@@ -104,7 +108,7 @@ class MyWidget(QMainWindow):
         self.add_edit.show()
 
     def update_table(self):
-        con = sqlite3.connect('coffee.sqlite')
+        con = sqlite3.connect('data/coffee.sqlite')
         cur = con.cursor()
         sql = "SELECT * FROM coffees"
 
